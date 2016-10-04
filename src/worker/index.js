@@ -10,13 +10,14 @@ const step = require('./loadSteps');
 const timedRun = require('../timedRun');
 const logger = require('../logger');
 
+const createPhantomPool = require('../createPhantomPool.js');
 /**
  * Creates a worker to work on a task package
  *
  * @private
  * @param {!CrawlKit} crawlerInstance The {@link CrawlKit} instance.
  */
-module.exports = (crawlerInstance, runnerKey, finderKey, prefix, pool, addUrl, processResult) => {
+module.exports = (crawlerInstance, runnerKey, finderKey, prefix, addUrl, processResult) => {
   /**
    * Gets a finder definition of a {@link CrawlKit} instance.
    *
@@ -53,6 +54,9 @@ module.exports = (crawlerInstance, runnerKey, finderKey, prefix, pool, addUrl, p
     const workerLogger = logger(workerLogPrefix);
 
     const triesLog = scope.tries > 1 ? ` (attempt ${scope.tries})` : '';
+
+    const pool = createPhantomPool(workerLogger, crawlerInstance, workerLogPrefix);
+
     workerLogger.info(`Took ${scope.url} from queue${triesLog}.`);
     timedRun(workerLogger, (done) => {
       const workerFinished = callbackTimeout(once((err) => {
@@ -82,6 +86,7 @@ module.exports = (crawlerInstance, runnerKey, finderKey, prefix, pool, addUrl, p
           scope.clearBrowser();
         }
         processResult(scope, err);
+        pool.drain(() => pool.destroyAllNow());
         done();
       }), crawlerInstance.timeout, `Worker timed out after ${crawlerInstance.timeout}ms.`);
 

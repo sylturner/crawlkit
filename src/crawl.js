@@ -7,7 +7,6 @@ const HeadlessError = require('node-phantom-simple/headless_error');
 const TimeoutError = require('callback-timeout/errors').TimeoutError;
 
 const worker = require('./worker');
-const createPhantomPool = require('./createPhantomPool.js');
 const timedRun = require('./timedRun');
 const InvalidUrlError = require('./errors').InvalidUrlError;
 const l = require('./logger');
@@ -28,7 +27,6 @@ module.exports = (crawlerInstance, writeResult, runnerKey, finderKey) => {
         Starting to crawl.
         Concurrent PhantomJS browsers: ${crawlerInstance.concurrency}.
     `);
-  const pool = createPhantomPool(logger, crawlerInstance, prefix);
   const seen = new Set();
 
   return timedRun(logger, (done) => {
@@ -66,17 +64,12 @@ module.exports = (crawlerInstance, writeResult, runnerKey, finderKey) => {
     };
 
     q = async.queue(
-      worker(crawlerInstance, runnerKey, finderKey, prefix, pool, addUrl, processResult),
+      worker(crawlerInstance, runnerKey, finderKey, prefix, addUrl, processResult),
       crawlerInstance.concurrency
     );
 
     q.drain = () => {
       logger.debug(`Processed ${seen.size} discovered URLs.`);
-
-      setImmediate(() => {
-        logger.debug('Draining pool.');
-        pool.drain(() => pool.destroyAllNow());
-      });
       done();
     };
 
