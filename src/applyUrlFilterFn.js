@@ -21,7 +21,7 @@ const urijs = require('urijs');
  *                               Throws an error if there is a problem with the URL.
  */
 module.exports = (filterFn, url, fromUrl, cb) => {
-  const uri = urijs(url);
+  const uri = urijs(url.trim());
   const fromUri = urijs(fromUrl);
   fromUri.normalize();
   let absoluteUrl = uri.absoluteTo(fromUri).toString();

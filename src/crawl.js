@@ -37,7 +37,7 @@ module.exports = (crawlerInstance, writeResult, runnerKey, finderKey) => {
     let q = null;
     const addUrl = (u) => {
       let url = urijs(u);
-      url = url.absoluteTo(defaultAbsoluteTo);
+      url = url.absoluteTo(defaultAbsoluteTo + url.hostname());
       url.normalize();
       url = url.toString();
 
