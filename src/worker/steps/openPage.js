@@ -44,6 +44,7 @@ module.exports = (scope, logger, addUrl, crawlerInstance) => {
             if (state === false) {
               done(`URL ${redirectedToUrl} was not followed`, scope);
             } else {
+              scope.result['redirectedToUrl'] = redirectedToUrl;
               done(new errors.RedirectError('Redirected', redirectedToUrl), scope);
             }
           } catch (e) {
