@@ -1,6 +1,5 @@
 'use strict'; // eslint-disable-line
 
-const HeadlessError = require('node-phantom-simple/headless_error');
 const async = require('async');
 const once = require('once');
 const callbackTimeout = require('callback-timeout');
@@ -72,17 +71,9 @@ module.exports = (crawlerInstance, runnerKey, finderKey, prefix, addUrl, process
           workerLogger.debug('Page closed.');
         }
         if (scope.browser) {
-          if (err instanceof HeadlessError) {
-            // take no chances
-            // if there was an error on Phantom side, we should get rid of the instance
-            workerLogger.info('Notifying pool to destroy Phantom instance.');
-            pool.destroy(scope.browser);
-            workerLogger.debug('Phantom instance destroyed.');
-          } else {
-            workerLogger.debug('Attempting to release Phantom instance.');
-            pool.release(scope.browser);
-            workerLogger.debug('Phantom instance released to pool.');
-          }
+          workerLogger.debug('Attempting to release Phantom instance.');
+          pool.release(scope.browser);
+          workerLogger.debug('Phantom instance released to pool.');
           scope.clearBrowser();
         }
         processResult(scope, err);
