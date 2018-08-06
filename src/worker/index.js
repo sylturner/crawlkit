@@ -72,7 +72,7 @@ module.exports = (crawlerInstance, runnerKey, finderKey, prefix, addUrl, process
         }
         if (scope.browser) {
           workerLogger.debug('Attempting to release Phantom instance.');
-          pool.release(scope.browser);
+          pool.destroy(scope.browser);
           workerLogger.debug('Phantom instance released to pool.');
           scope.clearBrowser();
         }
