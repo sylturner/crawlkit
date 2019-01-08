@@ -56,7 +56,7 @@ module.exports = (scope, logger, addUrl, crawlerInstance) => {
     };
 
     const onResourceReceived = (res) => {
-      if (urijs(scope.url).equals(res.url) && parseInt(res.status, 10) >= 400) {
+      if ((res.url.length < 2000) && urijs(scope.url).equals(res.url) && parseInt(res.status, 10) >= 400) {
         // main page returned with a 4XX or higher
         done(new errors.StatusError(res.statusText, res.status));
         return;
